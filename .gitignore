@@ -94,6 +94,6 @@ ENV/
 .DS_Store
 
 CamVid/
-data/
+*.npy
 
 *.hdf5
