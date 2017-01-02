@@ -4444,7 +4444,7 @@
             "nb_col": 3, 
             "output_shape": [
                null, 
-               800, 
+               560, 
                56, 
                56
             ], 
@@ -4459,7 +4459,7 @@
             "border_mode": "same", 
             "batch_input_shape": [
                null, 
-               800, 
+               560, 
                28, 
                28
             ], 
@@ -4852,7 +4852,7 @@
             "nb_col": 3, 
             "output_shape": [
                null, 
-               800, 
+               368, 
                112, 
                112
             ], 
@@ -4867,7 +4867,7 @@
             "border_mode": "same", 
             "batch_input_shape": [
                null, 
-               800, 
+               368, 
                56, 
                56
             ], 
@@ -5154,7 +5154,7 @@
             "nb_col": 3, 
             "output_shape": [
                null, 
-               800, 
+               256, 
                224, 
                224
             ], 
@@ -5169,7 +5169,7 @@
             "border_mode": "same", 
             "batch_input_shape": [
                null, 
-               800, 
+               256, 
                112, 
                112
             ], 

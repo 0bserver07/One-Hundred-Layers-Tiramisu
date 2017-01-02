@@ -38,7 +38,7 @@ What is The One Hundred Layers Tiramisu?
 
 * Download the CamVid Dataset as explained below:
 	* Use the `data_loader.py` to crop images to `224, 224` as in the paper implementation.
-* run `python model-tirmasu.py` for now to generate the FC-Dense103 Layers Model
+* run `python model-tirmasu-103.py` for now to generate the FC-Dense103 Layers Model
 * run `python train-tirmasu.py` to start training:
 	* `Theano` can be changed inside.
 	* Saves best checkpoints for the model and `data_loader` included for the `CamVidDataset`
@@ -64,7 +64,8 @@ What is The One Hundred Layers Tiramisu?
 ----
 
 	[ ] FC-DenseNet 103
-	[ ] FC-DenseNet 53
+	[ ] FC-DenseNet 56
+	[ ] FC-DenseNet 67
 	[ ] Replicate Test Accuracy CamVid Task
 	[ ] Replicate Test Accuracy GaTech Dataset Task
 	[ ] Requirements
