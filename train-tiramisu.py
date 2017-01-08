@@ -18,7 +18,6 @@ from keras.layers.normalization import BatchNormalization
 from keras.callbacks import ModelCheckpoint
 from keras.optimizers import RMSprop
 from keras import backend as K
-from layers import SubPixelUpscaling
 from keras.layers import Input, merge
 from keras.regularizers import l2
 from keras.layers.pooling import AveragePooling2D
