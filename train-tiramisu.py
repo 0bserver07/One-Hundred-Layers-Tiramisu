@@ -5,8 +5,8 @@ import os
 os.environ['KERAS_BACKEND'] = 'theano'
 os.environ['THEANO_FLAGS']='mode=FAST_RUN,device=gpu0,floatX=float32,optimizer=None'
 
-import sys;
-sys.setrecursionlimit(40000)
+# import sys;
+# sys.setrecursionlimit(40000)
 
 
 
@@ -18,11 +18,17 @@ from keras.layers.normalization import BatchNormalization
 from keras.callbacks import ModelCheckpoint
 from keras.optimizers import RMSprop
 from keras import backend as K
+from layers import SubPixelUpscaling
+from keras.layers import Input, merge
+from keras.regularizers import l2
+from keras.layers.pooling import AveragePooling2D
+from keras.models import Model
 
 import cv2
 import numpy as np
 import json
 np.random.seed(07) # 0bserver07 for reproducibility
+
 
 
 
@@ -65,8 +71,12 @@ test_data = np.load('./data/test_data.npy')
 test_label = np.load('./data/test_label.npy')
 
 # load the model:
-with open('tiramisu_fc_dense103_model.json') as model_file:
-    tiramisu = models.model_from_json(model_file.read())
+# with open('tiramisu_fc_dense103_model.json') as model_file:
+#     tiramisu = models.model_from_json(model_file.read())
+
+
+nb_layers = [4, 5, 7, 10, 12, 15]
+tiramisu = create_fc_dense_net(nb_classes=12,img_dim=(3, 224, 224), nb_layers=nb_layers)
 
 # section 4.1 from the paper
 optimizer = RMSprop(lr=1e-03, rho=0.9, epsilon=1e-08, decay=0.995)
@@ -78,8 +88,12 @@ checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1,
 									 save_best_only=True, mode='max')
 callbacks_list = [checkpoint]
 
-nb_epoch = 5
-batch_size = 1
+nb_epoch = 100
+batch_size = 3
+
+# 
+tiramisu.load_weights('weights/tiramisu_model_weight_40.hdf5')
+# 
 
 # Fit the model
 history = tiramisu.fit(train_data, train_label, callbacks=callbacks_list, batch_size=batch_size, nb_epoch=nb_epoch,
