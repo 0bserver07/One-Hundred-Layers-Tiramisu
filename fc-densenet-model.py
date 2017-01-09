@@ -18,19 +18,19 @@ class Tiramisu():
                             bottleneck=False, reduction=0.0, dropout_rate=None, weight_decay=1E-4, upscaling_type='deconv',
                             verbose=True):
 
-        self.nb_classes 
-        self.img_dim 
-        self.nb_dense_block=5 
-        self.growth_rate=12 
-        self.nb_filter=16 
-        self.nb_layers=4 
-        self.upsampling_conv=128       
-        self.bottleneck=False 
-        self.reduction=0.0 
-        self.dropout_rate=None 
-        self.weight_decay=1E-4 
-        self.upscaling_type='subpixel'
-        self.verbose=True
+        self.nb_classes=nb_classes
+        self.img_dim=img_dim
+        self.nb_dense_block=nb_dense_block
+        self.growth_rate=growth_rate
+        self.nb_filter=nb_filter
+        self.nb_layers=nb_layers
+        self.upsampling_conv=upsampling_conv    
+        self.bottleneck=bottleneck
+        self.reduction=reduction
+        self.dropout_rate=dropout_rate
+        self.weight_decay=weight_decay
+        self.upscaling_type=upscaling_type
+        self.verbose=verbose
         self.create()
 
     def conv_block(self, input_tensor, nb_filter, bottleneck=False, dropout_rate=None, weight_decay=1E-4):
@@ -142,7 +142,7 @@ class Tiramisu():
         feature_list = [x]
 
         for i in range(nb_layers):
-            x = conv_block(x, growth_rate, bottleneck, dropout_rate, weight_decay)
+            x = self.conv_block(x, growth_rate, bottleneck, dropout_rate, weight_decay)
             feature_list.append(x)
             x = merge(feature_list, mode='concat', concat_axis=concat_axis)
             nb_filter += growth_rate
@@ -183,82 +183,81 @@ class Tiramisu():
 
         batch_size = None
 
-        model_input = Input(shape=img_dim)
+        model_input = Input(shape=self.img_dim)
 
         concat_axis = 1 
 
-        _, rows, cols = img_dim
+        _, rows, cols = self.img_dim
 
 
-        if reduction != 0.0:
-            assert reduction <= 1.0 and reduction > 0.0, "reduction value must lie between 0.0 and 1.0"
+        if self.reduction != 0.0:
+            assert self.reduction <= 1.0 and self.reduction > 0.0, "reduction value must lie between 0.0 and 1.0"
 
         # check if upsampling_conv has minimum number of filters
         # minimum is set to 12, as at least 3 color channels are needed for correct upsampling
-        assert upsampling_conv > 12 and upsampling_conv % 4 == 0, "upsampling_conv number of channels must " \
+        assert self.upsampling_conv > 12 and self.upsampling_conv % 4 == 0, "upsampling_conv number of channels must " \
                                                                  "be a positive number divisible by 4 and greater " \
                                                                   "than 12"
 
-        assert upscaling_type.lower() in ['subpixel', 'deconv'], "upscaling_type must be either 'subpixel' or " \
-                                                                 "'deconv'"
+
 
         # layers in each dense block
-        if type(nb_layers) is list or type(nb_layers) is tuple:
-            nb_layers = list(nb_layers) # Convert tuple to list
+        if type(self.nb_layers) is list or type(self.nb_layers) is tuple:
+            self.nb_layers = list(nb_layers) # Convert tuple to list
 
-            assert len(nb_layers) == (nb_dense_block + 1), "If list, nb_layer is used as provided. " \
+            assert len(self.nb_layers) == (self.nb_dense_block + 1), "If list, nb_layer is used as provided. " \
                                                             "Note that list size must be (nb_dense_block + 1)"
 
-            final_nb_layer = nb_layers[-1]
-            nb_layers = nb_layers[:-1]
+            final_nb_layer = self.nb_layers[-1]
+            self.nb_layers = self.nb_layers[:-1]
 
         else:
-            final_nb_layer = nb_layers
-            nb_layers = [nb_layers] * nb_dense_block
+            final_nb_layer = self.nb_layers
+            self.nb_layers = [self.nb_layers] * self.nb_dense_block
 
-        if bottleneck:
-            nb_layers = [int(layer // 2) for layer in nb_layers]
+        if self.bottleneck:
+            self.nb_layers = [int(layer // 2) for layer in self.nb_layers]
 
         # compute initial nb_filter if -1, else accept users initial nb_filter
-        if nb_filter <= 0:
-            nb_filter = 2 * growth_rate
+        if self.nb_filter <= 0:
+            self.nb_filter = 2 * self.growth_rate
 
         # compute compression factor
-        compression = 1.0 - reduction
+        compression = 1.0 - self.reduction
 
         # Initial convolution
         x = Convolution2D(48, 3, 3, init="he_uniform", border_mode="same", name="initial_conv2D", bias=False,
-                          W_regularizer=l2(weight_decay))(model_input)
+                          W_regularizer=l2(self.weight_decay))(model_input)
 
         skinput_tensor_connection = x
         skinput_tensor_list = []
 
         # Add dense blocks and transition down block
-        for block_idx in range(nb_dense_block):
-            x, nb_filter = dense_block(x, nb_layers[block_idx], nb_filter, growth_rate, bottleneck=bottleneck,
-                                       dropout_rate=dropout_rate, weight_decay=weight_decay)
+        for block_idx in range(self.nb_dense_block):
+            x, nb_filter = self.dense_block(x, self.nb_layers[block_idx], self.nb_filter, self.growth_rate, bottleneck=self.bottleneck,
+                                       dropout_rate=self.dropout_rate, weight_decay=self.weight_decay)
 
             # Skinput_tensor connection
             x = merge([x, skinput_tensor_connection], mode='concat', concat_axis=concat_axis)
             skinput_tensor_list.append(x)
 
             # add transition_block
-            x = transition_down_block(x, nb_filter, compression=compression, dropout_rate=dropout_rate,
-                                      weight_decay=weight_decay)
+            x = self.transition_down_block(x, nb_filter, compression=compression, dropout_rate=self.dropout_rate,
+                                      weight_decay=self.weight_decay)
             nb_filter = int(nb_filter * compression)
 
             # Preserve transition for next skinput_tensor connection after dense
             skinput_tensor_connection = x
 
         # The last dense_block does not have a transition_down_block
-        x, nb_filter = dense_block(x, final_nb_layer, nb_filter, growth_rate, bottleneck=bottleneck,
-                                   dropout_rate=dropout_rate, weight_decay=weight_decay)
+        x, nb_filter = self.dense_block(x, final_nb_layer, nb_filter, self.growth_rate, bottleneck=self.bottleneck,
+                                   dropout_rate=self.dropout_rate, weight_decay=self.weight_decay)
 
         out_shape = [batch_size, nb_filter, rows // 16, cols // 16]
         
         # Add dense blocks and transition up block
-        for block_idx in range(nb_dense_block):
-            x = transition_up_block(x, nb_filters=upsampling_conv, type=upscaling_type, output_shape=out_shape)
+        for block_idx in range(self.nb_dense_block):
+            x = self.transition_up_block(x, nb_filters=self.upsampling_conv, type=self.upscaling_type, output_shape=out_shape)
 
             out_shape[2] *= 2
             out_shape[3] *= 2
@@ -266,16 +265,16 @@ class Tiramisu():
 
             x = merge([x, skinput_tensor_list.pop()], mode='concat', concat_axis=concat_axis)
 
-            x, nb_filter = dense_block(x, nb_layers[-block_idx], nb_filter, growth_rate, bottleneck=bottleneck,
-                                       dropout_rate=dropout_rate, weight_decay=weight_decay)
+            x, nb_filter = self.dense_block(x, self.nb_layers[-block_idx], nb_filter, growth_rate, bottleneck=self.bottleneck,
+                                       dropout_rate=self.dropout_rate, weight_decay=self.weight_decay)
 
-        x = Convolution2D(nb_classes, 1, 1, activation='linear', border_mode='same', W_regularizer=l2(weight_decay),
+        x = Convolution2D(nb_classes, 1, 1, activation='linear', border_mode='same', W_regularizer=l2(self.weight_decay),
                           bias=False)(x)
 
-        channel, row, col = img_dim
+        channel, row, col = self.img_dim
 
 
-        x = Reshape((row * col, nb_classes))(x)
+        x = Reshape((row * col, self.nb_classes))(x)
 
         x = Activation('softmax')(x)
 
@@ -285,26 +284,26 @@ class Tiramisu():
         nb_conv_layers = len([layer.name for layer in densenet.layers
                               if layer.__class__.__name__ == 'Convolution2D'])
 
-        depth = nb_conv_layers -  nb_dense_block # For 1 extra convolution layers per transition up
+        depth = nb_conv_layers -  self.nb_dense_block # For 1 extra convolution layers per transition up
 
-        if verbose: print('Total number of convolutions', depth)
+        if self.verbose: print('Total number of convolutions', depth)
 
-        if verbose:
-            if bottleneck and not reduction:
-                print("Bottleneck DenseNet-B-%d-%d created." % (depth, growth_rate))
-            elif not bottleneck and reduction > 0.0:
-                print("DenseNet-C-%d-%d with %0.1f compression created." % (depth, growth_rate, compression))
-            elif bottleneck and reduction > 0.0:
-                print("Bottleneck DenseNet-BC-%d-%d with %0.1f compression created." % (depth, growth_rate, compression))
+        if self.verbose:
+            if self.bottleneck and not self.reduction:
+                print("Bottleneck DenseNet-B-%d-%d created." % (depth, self.growth_rate))
+            elif not self.bottleneck and self.reduction > 0.0:
+                print("DenseNet-C-%d-%d with %0.1f compression created." % (depth, self.growth_rate, compression))
+            elif self.bottleneck and self.reduction > 0.0:
+                print("Bottleneck DenseNet-BC-%d-%d with %0.1f compression created." % (depth, self.growth_rate, compression))
             else:
-                print("DenseNet-%d-%d created." % (depth, growth_rate))
+                print("DenseNet-%d-%d created." % (depth, self.growth_rate))
 
         return densenet
 
 
 
 nb_layers = [4, 5, 7, 10, 12, 15]
-model = create_fc_dense_net(nb_classes=12,img_dim=(3, 224, 224), nb_layers=nb_layers)
+model = Tiramisu(nb_classes=12,img_dim=(3, 224, 224), nb_layers=nb_layers)
 model.summary()
 
 with open('tiramisu_fc_dense103_model.json', 'w') as outfile:
