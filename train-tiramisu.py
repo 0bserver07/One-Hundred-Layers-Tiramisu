@@ -2,12 +2,6 @@ from __future__ import absolute_import
 from __future__ import print_function
 import os
 
-os.environ['KERAS_BACKEND'] = 'theano'
-os.environ['THEANO_FLAGS']='mode=FAST_RUN,device=gpu0,floatX=float32,optimizer=None'
-
-# import sys;
-# sys.setrecursionlimit(40000)
-
 
 
 
@@ -90,9 +84,9 @@ callbacks_list = [checkpoint]
 nb_epoch = 100
 batch_size = 3
 
-# 
+#
 tiramisu.load_weights('weights/tiramisu_model_weight_40.hdf5')
-# 
+#
 
 # Fit the model
 history = tiramisu.fit(train_data, train_label, callbacks=callbacks_list, batch_size=batch_size, nb_epoch=nb_epoch,

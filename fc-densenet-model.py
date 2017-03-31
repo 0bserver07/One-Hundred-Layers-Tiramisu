@@ -24,7 +24,7 @@ class Tiramisu():
         self.growth_rate=growth_rate
         self.nb_filter=nb_filter
         self.nb_layers=nb_layers
-        self.upsampling_conv=upsampling_conv    
+        self.upsampling_conv=upsampling_conv
         self.bottleneck=bottleneck
         self.reduction=reduction
         self.dropout_rate=dropout_rate
@@ -185,7 +185,7 @@ class Tiramisu():
 
         model_input = Input(shape=self.img_dim)
 
-        concat_axis = 1 
+        concat_axis = 1
 
         _, rows, cols = self.img_dim
 
@@ -254,7 +254,7 @@ class Tiramisu():
                                    dropout_rate=self.dropout_rate, weight_decay=self.weight_decay)
 
         out_shape = [batch_size, nb_filter, rows // 16, cols // 16]
-        
+
         # Add dense blocks and transition up block
         for block_idx in range(self.nb_dense_block):
             x = self.transition_up_block(x, nb_filters=self.upsampling_conv, type=self.upscaling_type, output_shape=out_shape)
