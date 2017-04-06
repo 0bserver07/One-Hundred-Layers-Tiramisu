@@ -54,29 +54,37 @@ class Tiramisu():
 
         model.add(Conv2D(48, kernel_size=(3, 3), padding='same', input_shape=(3,224,224)))
 
+        # (5 * 4)* 2 + 5 + 5 + 1 + 1 +1
+        # growth_m = 4 * 12
+        # previous_m = 48
+
         self.DenseBlock(4,96) # 4*12 = 48 + 48 = 96
-        self.TransitionDown(96)  
-        self.DenseBlock(5,144) # 4*12 = 48 + 
+        self.TransitionDown(96)
+        self.DenseBlock(4,144) # 4*12 = 48 + 96 = 144
         self.TransitionDown(144)
-        self.DenseBlock(7,228) # 4*12 = 48 + 
-        self.TransitionDown(228) 
-        self.DenseBlock(10,348)# 4*12 = 48 + 
-        self.TransitionDown(348)
-        self.DenseBlock(12,492) # 4*12 = 48 + 
-        self.TransitionDown(492)
+        self.DenseBlock(4,192) # 4*12 = 48 + 144 = 192
+        self.TransitionDown(192)
+        self.DenseBlock(4,240)# 4*12 = 48 + 192 = 240
+        self.TransitionDown(240)
+        self.DenseBlock(4,288) # 4*12 = 48 + 288 = 336
+        self.TransitionDown(288)
 
-        self.DenseBlock(15,672) # 4*12 = 48 + 
+        self.DenseBlock(15,336) # 4 * 12 = 48 + 288 = 336
 
-        self.TransitionUp(1072, (7, 7,1072), (None, 14, 14, 1072))
-        self.DenseBlock(12,1072)
-        self.TransitionUp(800, (14, 14,800), (None, 28, 28, 800))
-        self.DenseBlock(10,800)
-        self.TransitionUp(560, (28, 28,560), (None, 56, 56, 560))
-        self.DenseBlock(7,560)
-        self.TransitionUp(368, (56, 56,368), (None, 112, 112, 368))
-        self.DenseBlock(5,368)
-        self.TransitionUp(256, (112, 112,256), (None, 224, 224, 256))
-        self.DenseBlock(4,256)
+        self.TransitionUp(384, (384, 7, 7), (None, 384, 14, 14))  # m = 288 + 4x12 + 4x12 = 384.
+        self.DenseBlock(12,384)
+
+        self.TransitionUp(336, (336, 14, 14), (None, 336, 28, 28)) #m = 240 + 4x12 + 4x12 = 336
+        self.DenseBlock(10,336)
+
+        self.TransitionUp(288, (288, 28, 28), (None, 288, 56, 56)) # m = 192 + 4x12 + 4x12 = 288
+        self.DenseBlock(7,288)
+
+        self.TransitionUp(240, (240, 56, 56), (None, 240, 112, 112)) # m = 144 + 4x12 + 4x12 = 240
+        self.DenseBlock(5,240)
+
+        self.TransitionUp(192, (192, 112, 112), (None, 192, 224, 224)) # m = 96 + 4x12 + 4x12 = 192
+        self.DenseBlock(4,192)
 
         model.add(Conv2D(12, kernel_size=(3, 3), padding='same'))
         model.add(Reshape((12, 224 * 224)))

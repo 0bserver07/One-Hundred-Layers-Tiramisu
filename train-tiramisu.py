@@ -75,25 +75,31 @@ test_data = np.load('./data/test_data.npy')
 test_label = np.load('./data/test_label.npy')
 
 # load the model:
-with open('tiramisu_fc_dense103_model.json') as model_file:
+with open('tiramisu_fc_dense56_model.json') as model_file:
     tiramisu = models.model_from_json(model_file.read())
 
 
 nb_layers = [4, 5, 7, 10, 12, 15]
 # tiramisu = create_fc_dense_net(nb_classes=12,img_dim=(3, 224, 224), nb_layers=nb_layers)
 
+
+# work from previous model
+tiramisu.load_weights("weights/rms_def_tiramisu_weights.best.hdf5")
+
 # section 4.1 from the paper
-optimizer = RMSprop(lr=1e-03, rho=0.9, epsilon=1e-08, decay=0.995)
+optimizer = RMSprop(lr=0.001)
+# optimizer = RMSprop(lr=1e-03, rho=0.9, epsilon=1e-08, decay=0.995)
+
 tiramisu.compile(loss="categorical_crossentropy", optimizer=optimizer, metrics=["accuracy"])
 
 # checkpoint
-filepath="tiramisu_weights.best.hdf5"
+filepath="weights/rms_def_tiramisu_weights.best.hdf5"
 checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1,
 									 save_best_only=True, mode='max')
 callbacks_list = [checkpoint]
 
 nb_epoch = 100
-batch_size = 1
+batch_size = 2
 
 #
 # tiramisu.load_weights('weights/tiramisu_model_weight_40.hdf5')
@@ -104,5 +110,5 @@ history = tiramisu.fit(train_data, train_label, callbacks=callbacks_list, batch_
                     verbose=1, class_weight=class_weighting , validation_data=(test_data, test_label), shuffle=True) # validation_split=0.33
 
 # This save the trained model weights to this file with number of epochs
-tiramisu.save_weights('weights/tiramisu_model_weight_{}.hdf5'.format(nb_epoch))
+tiramisu.save_weights('weights/rms_def_tiramisu_model_weight_{}.hdf5'.format(nb_epoch))
 

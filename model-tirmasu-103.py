@@ -18,6 +18,7 @@ import json
 
 K.set_image_dim_ordering('th')
 
+
 class Tiramisu():
 
 
@@ -54,6 +55,10 @@ class Tiramisu():
 
         model.add(Conv2D(48, kernel_size=(3, 3), padding='same', input_shape=(3,224,224)))
 
+        # (5 * 4)* 2 + 5 + 5 + 1 + 1 +1
+        # growth_m = 4 * 12
+        # previous_m = 48
+
         self.DenseBlock(4,112) # 4*16 = 64 + 48 = 112
         self.TransitionDown(112)
         self.DenseBlock(5,192) # 5*16 = 80 + 112 = 192
@@ -65,17 +70,26 @@ class Tiramisu():
         self.DenseBlock(12,656)
         self.TransitionDown(656)
 
-        self.DenseBlock(15,880)
+        self.DenseBlock(15,896) # m = 656 + 15x16 = 896
 
-        self.TransitionUp(1072, (7, 7,1072), (None, 14, 14, 1072))
-        self.DenseBlock(12,1072)
-        self.TransitionUp(800, (14, 14,800), (None, 28, 28, 800))
-        self.DenseBlock(10,800)
-        self.TransitionUp(560, (28, 28,560), (None, 56, 56, 560))
-        self.DenseBlock(7,560)
-        self.TransitionUp(368, (56, 56,368), (None, 112, 112, 368))
-        self.DenseBlock(5,368)
-        self.TransitionUp(256, (112, 112,256), (None, 224, 224, 256))
+        # upsampling part, m[B] is the sum of 3 terms
+        # 1. the m value corresponding to same resolution in the downsampling part (skip connection)
+        # 2. the number of feature maps from the upsampled block (n_layers[B-1] * growth_rate)
+        # 3. the number of feature maps in the new block (n_layers[B] * growth_rate)
+        #
+        self.TransitionUp(1088, (1088, 7, 7), (None, 1088, 14, 14))  # m = 656 + 15x16 + 12x16 = 1088.
+        self.DenseBlock(12,1088)
+
+        self.TransitionUp(816, (816, 14, 14), (None, 816, 28, 28)) #m = 464 + 12x16 + 10x16 = 816
+        self.DenseBlock(10,816)
+
+        self.TransitionUp(576, (576, 28, 28), (None, 576, 56, 56)) # m = 304 + 10x16 + 7x16 = 576
+        self.DenseBlock(7,576)
+
+        self.TransitionUp(384, (384, 56, 56), (None, 384, 112, 112)) # m = 192 + 7x16 + 5x16 = 384
+        self.DenseBlock(5,384)
+
+        self.TransitionUp(256, (256, 112, 112), (None, 256, 224, 224)) # m = 112 + 5x16 + 4x16 = 256
         self.DenseBlock(4,256)
 
         model.add(Conv2D(12, kernel_size=(3, 3), padding='same'))
