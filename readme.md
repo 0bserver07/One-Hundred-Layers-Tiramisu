@@ -1,7 +1,7 @@
 ### The One Hundred Layers Tiramisu: Fully Convolutional DenseNets for Semantic Segmentation:
 ---
 
-*Work In Progress, Theano Recurrsion Error*
+*Work In Progress, Results can't be replicated with 56 layers model*
 
 
 What is The One Hundred Layers Tiramisu?
@@ -17,6 +17,12 @@ What is The One Hundred Layers Tiramisu?
 
 ##### *[The One Hundred Layers Tiramisu: Fully Convolutional DenseNets for Semantic Segmentation (Simon Jégou, Michal Drozdzal, David Vazquez, Adriana Romero, Yoshua Bengio) arXiv:1611.09326 cs.CV](https://arxiv.org/abs/1611.09326)*
  	
+#### Requirements:
+-----
+
+* Keras==2.0.2
+* tensorflow-gpu==1.0.1
+* or just go ahead and do: `pip install -r requirements.txt`
 
 #### Model Strucure:
 -----
@@ -33,14 +39,15 @@ What is The One Hundred Layers Tiramisu?
  ![model-blocks](./imgs/tiramisu-blocks.png)
 
 -----
+
+
 ### Repo (explanation):
 ---
 
 * Download the CamVid Dataset as explained below:
 	* Use the `data_loader.py` to crop images to `224, 224` as in the paper implementation.
-* run `python model-tirmasu-103.py` for now to generate the FC-Dense103 Layers Model
+* run `python model-tirmasu-103.py` or `python model-tirmasu-56.py` for now to generate each models file.
 * run `python train-tirmasu.py` to start training:
-	* `Theano` can be changed inside.
 	* Saves best checkpoints for the model and `data_loader` included for the `CamVidDataset`
 * `helper.py` contains two methods `normalized` and `one_hot_it`, currently for the CamVid Task
 
@@ -63,8 +70,8 @@ What is The One Hundred Layers Tiramisu?
 ### To Do:
 ----
 
-	[ ] FC-DenseNet 103
-	[ ] FC-DenseNet 56
+	[x] FC-DenseNet 103
+	[x] FC-DenseNet 56
 	[ ] FC-DenseNet 67
 	[ ] Replicate Test Accuracy CamVid Task
 	[ ] Replicate Test Accuracy GaTech Dataset Task
