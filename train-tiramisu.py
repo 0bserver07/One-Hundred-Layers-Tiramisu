@@ -10,24 +10,26 @@ from keras.layers.normalization import BatchNormalization
 
 from keras.layers import Conv2D, Conv2DTranspose
 
-from keras.optimizers import RMSprop
+from keras.optimizers import RMSprop, Adam, SGD
 from keras.callbacks import ModelCheckpoint
 from keras.layers import Input, merge
 from keras.regularizers import l2
 from keras.models import Model
-
+from keras import regularizers
 
 
 from keras import backend as K
 
 from keras import callbacks
-remote = callbacks.RemoteMonitor(root='http://localhost:9000')
 
-import cv2
-import numpy as np
-import json
+# remote = callbacks.RemoteMonitor(root='http://localhost:9000', path='/publish/epoch/end/', field='data', headers=None)
 
-K.set_image_dim_ordering('th')
+early_stopping = callbacks.EarlyStopping(monitor='val_loss', patience=50, verbose=0, mode='auto')
+
+# tensor_board = callbacks.TensorBoard(log_dir='./logs', histogram_freq=5, write_graph=True, write_images=True)
+
+
+K.set_image_dim_ordering('tf')
 
 import cv2
 import numpy as np
@@ -55,60 +57,68 @@ class_weighting = [
 ]
 
 
-# 11 class
-# [
-#   0.2595,
-#   0.1826,
-#   4.5640,
-#   0.1417,
-#   0.9051,
-#   0.3826,
-#   9.6446,
-#   1.8418,
-#   0.6823,
-#   6.2478,
-#   7.3614,
-# ]
-
 # load the data
 train_data = np.load('./data/train_data.npy')
-train_label = np.load('./data/train_label.npy')
+train_data = train_data.reshape((367, 224, 224, 3))
+
+train_label =  np.load('./data/train_label.npy')#[:,:,:-1]
+
+
 
 test_data = np.load('./data/test_data.npy')
-test_label = np.load('./data/test_label.npy')
+test_data = test_data.reshape((233, 224, 224, 3))
+
+
+test_label = np.load('./data/test_label.npy')#[:,:,:-1]
+
+# test_label = to_categorical(test_label, num_classes=None)
 
 # load the model:
-with open('tiramisu_fc_dense56_model.json') as model_file:
+with open('tiramisu_fc_dense67_model_12.json') as model_file:
     tiramisu = models.model_from_json(model_file.read())
 
 
-# nb_layers = [4, 5, 7, 10, 12, 15]
-# tiramisu = create_fc_dense_net(nb_classes=12,img_dim=(3, 224, 224), nb_layers=nb_layers)
-
-
-# if you want to work from previous model
-# tiramisu.load_weights("weights/rms_def_tiramisu_weights.best.hdf5")
-
 # section 4.1 from the paper
-optimizer = RMSprop(lr=1e-03, epsilon=1e-08)
-# optimizer = RMSprop(lr=1e-03, rho=0.9, epsilon=1e-08, decay=0.995)
+# optimizer = RMSprop(lr=0.001, decay=0.995)
+optimizer = SGD(lr=0.01)
+# optimizer = Adam(lr=1e-3, decay=0.995)
 
 tiramisu.compile(loss="categorical_crossentropy", optimizer=optimizer, metrics=["accuracy"])
 
-# checkpoint
-filepath="weights/rms_def_tiramisu_weights_lr10e.best.hdf5"
-checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1,
+# learning schedule callback
+# lrate = LearningRateScheduler(step_decay)
+
+# checkpoint 278
+filepath="weights/rms_def_tiramisu_weights_103_150.best.hdf5"
+checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=0,
 									 save_best_only=True, mode='max')
-callbacks_list = [checkpoint,remote]
+
+callbacks_list = [checkpoint, early_stopping]
 
 nb_epoch = 100
-batch_size = 2
+batch_size = 1
 
 
 # Fit the model
-history = tiramisu.fit(train_data, train_label, callbacks=callbacks_list, batch_size=batch_size, epochs=nb_epoch,
-                    verbose=1, class_weight=class_weighting , validation_data=(test_data, test_label), shuffle=True) # validation_split=0.33
+history = tiramisu.fit(train_data, train_label, batch_size=batch_size, epochs=nb_epoch,
+                    verbose=1, validation_data=(test_data, test_label), shuffle=True) # validation_split=0.33
+
+
+
 
 # This save the trained model weights to this file with number of epochs
-tiramisu.save_weights('weights/rms_def_tiramisu_model_weight_{}_lr10e.hdf5'.format(nb_epoch))
+tiramisu.save_weights('weights/tiramisu_weights_{}.hdf5'.format(nb_epoch))
 
+import matplotlib.pyplot as plt
+# list all data in history
+print(history.history.keys())
+# summarize history for accuracy
+plt.plot(history.history['acc'])
+plt.plot(history.history['val_acc'])
+plt.title('model accuracy')
+plt.ylabel('accuracy')
+plt.xlabel('epoch')
+plt.legend(['train', 'test'], loc='upper left')
+plt.show()
+# summarize history for loss
+tiramisu-67-model-acc.pngtiramisu-67-model-acc.pngtiramisu-67-model-acc.png

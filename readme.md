@@ -1,7 +1,7 @@
 ### The One Hundred Layers Tiramisu: Fully Convolutional DenseNets for Semantic Segmentation:
 ---
 
-*Work In Progress, Results can't be replicated with 56 layers model*
+*Work In Progress, Results can't be replicated yet with the model*
 
 
 What is The One Hundred Layers Tiramisu?
@@ -66,13 +66,20 @@ What is The One Hundred Layers Tiramisu?
 
 ----
 
+* Experiments:
+
+	  
+	  
+| Models        | Acc           | Loss  | Notes |
+| ------------- |:-------------:| -----:|-------|
+| FC-DenseNet 67| ![model-results](./imgs/tiramisu-67-model-acc.png) | ![model-results](./imgs/tiramisu-67-model-loss.png) | 100 Epochs, SGD
 
 ### To Do:
 ----
 
 	[x] FC-DenseNet 103
 	[x] FC-DenseNet 56
-	[ ] FC-DenseNet 67
+	[x] FC-DenseNet 67
 	[ ] Replicate Test Accuracy CamVid Task
 	[ ] Replicate Test Accuracy GaTech Dataset Task
 	[ ] Requirements
