@@ -3,6 +3,8 @@
 
 *Work In Progress, Results can't be replicated yet with the model*
 
+* Keras2 + TF used for the recent updates, which might cause with some confilict from previous version I had in here
+
 
 What is The One Hundred Layers Tiramisu?
 
