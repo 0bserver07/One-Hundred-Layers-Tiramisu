@@ -16,9 +16,11 @@ import cv2
 import numpy as np
 import json
 
-K.set_image_dim_ordering('th')
+K.set_image_dim_ordering('tf')
 
-
+# weight_decay = 0.0001
+from keras.regularizers import l2
+ 
 class Tiramisu():
 
 
@@ -29,23 +31,36 @@ class Tiramisu():
     def DenseBlock(self, layers, filters):
         model = self.model
         for i in range(layers):
-            model.add(BatchNormalization())
+            model.add(BatchNormalization(mode=0, axis=1,
+                                         gamma_regularizer=l2(0.0001),
+                                         beta_regularizer=l2(0.0001)))
             model.add(Activation('relu'))
-            model.add(Conv2D(filters, kernel_size=(3, 3), padding='same'))
+            model.add(Conv2D(filters,   kernel_size=(3, 3), padding='same',
+                                        kernel_initializer="he_uniform",
+                                        data_format='channels_last'))
             model.add(Dropout(0.2))
 
     def TransitionDown(self,filters):
         model = self.model
-        model.add(BatchNormalization())
+        model.add(BatchNormalization(mode=0, axis=1,
+                                     gamma_regularizer=l2(0.0001),
+                                     beta_regularizer=l2(0.0001)))
         model.add(Activation('relu'))
-        model.add(Conv2D(filters, kernel_size=(1, 1), padding='same'))
+        model.add(Conv2D(filters, kernel_size=(1, 1), padding='same',
+                                  kernel_initializer="he_uniform"))
         model.add(Dropout(0.2))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
+        model.add(MaxPooling2D( pool_size=(2, 2),
+                                strides=(2, 2),
+                                data_format='channels_last'))
 
-    def TransitionUp(self,filters, input_shape,output_shape):
+    def TransitionUp(self,filters,input_shape,output_shape):
         model = self.model
-        model.add(Conv2DTranspose(filters,kernel_size=(3, 3), strides=(2, 2),data_format='channels_first', output_shape=output_shape,
-                                    padding='same', input_shape=input_shape))
+        model.add(Conv2DTranspose(filters,  kernel_size=(3, 3), strides=(2, 2),
+                                            padding='same',
+                                            output_shape=output_shape,
+                                            input_shape=input_shape,
+                                            kernel_initializer="he_uniform",
+                                            data_format='channels_last'))
 
 
     def create(self):
@@ -53,7 +68,11 @@ class Tiramisu():
         # cropping
         # model.add(Cropping2D(cropping=((68, 68), (128, 128)), input_shape=(3, 360,480)))
 
-        model.add(Conv2D(48, kernel_size=(3, 3), padding='same', input_shape=(3,224,224)))
+        model.add(Conv2D(48, kernel_size=(3, 3), padding='same', 
+                             input_shape=(224,224,3),
+                            kernel_initializer="he_uniform",
+                            kernel_regularizer = l2(0.0001),
+                            data_format='channels_last'))
 
         # (5 * 4)* 2 + 5 + 5 + 1 + 1 +1
         # growth_m = 4 * 12
@@ -92,7 +111,12 @@ class Tiramisu():
         self.TransitionUp(256, (256, 112, 112), (None, 256, 224, 224)) # m = 112 + 5x16 + 4x16 = 256
         self.DenseBlock(4,256)
 
-        model.add(Conv2D(12, kernel_size=(3, 3), padding='same'))
+        model.add(Conv2D(12, kernel_size=(1,1), 
+                             padding='same',
+                             kernel_initializer="he_uniform",
+                             kernel_regularizer = l2(0.0001),
+                            data_format='channels_last'))
+        
         model.add(Reshape((12, 224 * 224)))
         model.add(Permute((2, 1)))
         model.add(Activation('softmax'))

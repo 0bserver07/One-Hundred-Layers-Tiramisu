@@ -24,7 +24,7 @@ from keras import callbacks
 
 # remote = callbacks.RemoteMonitor(root='http://localhost:9000', path='/publish/epoch/end/', field='data', headers=None)
 
-early_stopping = callbacks.EarlyStopping(monitor='val_loss', patience=50, verbose=0, mode='auto')
+early_stopping = callbacks.EarlyStopping(monitor='val_loss', patience=150, verbose=0, mode='auto')
 
 # tensor_board = callbacks.TensorBoard(log_dir='./logs', histogram_freq=5, write_graph=True, write_images=True)
 
@@ -80,7 +80,7 @@ with open('tiramisu_fc_dense67_model_12.json') as model_file:
 
 # section 4.1 from the paper
 # optimizer = RMSprop(lr=0.001, decay=0.995)
-optimizer = SGD(lr=0.01)
+optimizer = SGD(lr=0.01, decay=0.995)
 # optimizer = Adam(lr=1e-3, decay=0.995)
 
 tiramisu.compile(loss="categorical_crossentropy", optimizer=optimizer, metrics=["accuracy"])
@@ -89,14 +89,14 @@ tiramisu.compile(loss="categorical_crossentropy", optimizer=optimizer, metrics=[
 # lrate = LearningRateScheduler(step_decay)
 
 # checkpoint 278
-filepath="weights/rms_def_tiramisu_weights_103_150.best.hdf5"
+filepath="weights/rms_def_tiramisu_weights_67_150.best.hdf5"
 checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=0,
 									 save_best_only=True, mode='max')
 
 callbacks_list = [checkpoint, early_stopping]
 
-nb_epoch = 100
-batch_size = 1
+nb_epoch = 150
+batch_size = 2
 
 
 # Fit the model
@@ -121,4 +121,10 @@ plt.xlabel('epoch')
 plt.legend(['train', 'test'], loc='upper left')
 plt.show()
 # summarize history for loss
-tiramisu-67-model-acc.pngtiramisu-67-model-acc.pngtiramisu-67-model-acc.png
+plt.plot(history.history['loss'])
+plt.plot(history.history['val_loss'])
+plt.title('model loss')
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.legend(['train', 'test'], loc='upper left')
+plt.show()
