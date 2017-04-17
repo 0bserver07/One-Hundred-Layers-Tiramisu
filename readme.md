@@ -1,7 +1,9 @@
 ### The One Hundred Layers Tiramisu: Fully Convolutional DenseNets for Semantic Segmentation:
 ---
 
-*Work In Progress, Results can't be replicated yet with the model*
+*Work In Progress, Results can't be replicated yet with the models here*
+
+` feel free to open issues for suggestions:)`
 
 * Keras2 + TF used for the recent updates, which might cause with some confilict from previous version I had in here
 
@@ -42,6 +44,17 @@ What is The One Hundred Layers Tiramisu?
 
 -----
 
+#### Model Params:
+-----
+
+* RMSprop is used with Learnining Rete of 0.001 and weight decay 0.995
+	* However, using those got me nowhere, I switched to SGD and started tweaking the LR + Decay myself.
+* There are no details given about BatchNorm params, again I have gone with what the Original DenseNet paper had suggested.
+* Things to keep in mind perhaps:
+	* the weight inti: he_uniform (maybe change it around?)
+	* the regualzrazation too agressive?
+
+
 
 ### Repo (explanation):
 ---
@@ -74,7 +87,7 @@ What is The One Hundred Layers Tiramisu?
 	  
 | Models        | Acc           | Loss  | Notes |
 | ------------- |:-------------:| -----:|-------|
-| FC-DenseNet 67| ![model-results](./imgs/tiramisu-67-model-acc.png) | ![model-results](./imgs/tiramisu-67-model-loss.png) | 100 Epochs, SGD
+| FC-DenseNet 67| ![model-results](./imgs/tiramisu-67-model-acc.png) | ![model-results](./imgs/tiramisu-67-model-loss.png) | 150 Epochs, SGD
 
 ### To Do:
 ----

@@ -80,7 +80,7 @@ with open('tiramisu_fc_dense67_model_12.json') as model_file:
 
 # section 4.1 from the paper
 # optimizer = RMSprop(lr=0.001, decay=0.995)
-optimizer = SGD(lr=0.01, decay=0.995)
+optimizer = SGD(lr=0.01)
 # optimizer = Adam(lr=1e-3, decay=0.995)
 
 tiramisu.compile(loss="categorical_crossentropy", optimizer=optimizer, metrics=["accuracy"])
