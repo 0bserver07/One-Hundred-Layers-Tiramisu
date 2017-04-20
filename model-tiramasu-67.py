@@ -8,6 +8,8 @@ from keras.layers.core import Layer, Dense, Dropout, Activation, Flatten, Reshap
 from keras.layers.convolutional import Conv2D, MaxPooling2D, UpSampling2D, Cropping2D
 from keras.layers.normalization import BatchNormalization
 
+from keras.layers import add
+
 from keras.layers import Conv2D, Conv2DTranspose
 
 from keras import backend as K
@@ -39,6 +41,7 @@ class Tiramisu():
                                         kernel_initializer="he_uniform",
                                         data_format='channels_last'))
             model.add(Dropout(0.2))
+
 
     def TransitionDown(self,filters):
         model = self.model

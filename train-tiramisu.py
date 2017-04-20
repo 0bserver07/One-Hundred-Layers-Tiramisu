@@ -17,6 +17,8 @@ from keras.regularizers import l2
 from keras.models import Model
 from keras import regularizers
 
+from keras.models import Model
+from keras.layers import Input, concatenate, Conv2D, MaxPooling2D, UpSampling2D
 
 from keras import backend as K
 
@@ -24,7 +26,7 @@ from keras import callbacks
 
 # remote = callbacks.RemoteMonitor(root='http://localhost:9000', path='/publish/epoch/end/', field='data', headers=None)
 
-early_stopping = callbacks.EarlyStopping(monitor='val_loss', patience=150, verbose=0, mode='auto')
+early_stopping = callbacks.EarlyStopping(monitor='val_loss', patience=50, verbose=0, mode='auto')
 
 # tensor_board = callbacks.TensorBoard(log_dir='./logs', histogram_freq=5, write_graph=True, write_images=True)
 
@@ -74,7 +76,7 @@ test_label = np.load('./data/test_label.npy')#[:,:,:-1]
 # test_label = to_categorical(test_label, num_classes=None)
 
 # load the model:
-with open('tiramisu_fc_dense67_model_12.json') as model_file:
+with open('tiramisu_fc_dense67_model_12_func.json') as model_file:
     tiramisu = models.model_from_json(model_file.read())
 
 
@@ -89,13 +91,13 @@ tiramisu.compile(loss="categorical_crossentropy", optimizer=optimizer, metrics=[
 # lrate = LearningRateScheduler(step_decay)
 
 # checkpoint 278
-filepath="weights/rms_def_tiramisu_weights_67_150.best.hdf5"
+filepath="weights/rms_def_tiramisu_weights_67_12_func_100.best.hdf5"
 checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=0,
 									 save_best_only=True, mode='max')
 
 callbacks_list = [checkpoint, early_stopping]
 
-nb_epoch = 150
+nb_epoch = 100
 batch_size = 2
 
 
@@ -107,7 +109,7 @@ history = tiramisu.fit(train_data, train_label, batch_size=batch_size, epochs=nb
 
 
 # This save the trained model weights to this file with number of epochs
-tiramisu.save_weights('weights/tiramisu_weights_{}.hdf5'.format(nb_epoch))
+tiramisu.save_weights('weights/rms_def_tiramisu_weights_67_12_func_{}.hdf5'.format(nb_epoch))
 
 import matplotlib.pyplot as plt
 # list all data in history
