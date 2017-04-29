@@ -39,7 +39,7 @@ class Tiramisu():
     def DenseBlock(self, layers_count, filters, previous_layer, model_layers, level):
         model_layers[level] = {}
         for i in range(layers_count):
-            model_layers[level]['b_norm'+str(i+1)] = BatchNormalization(mode=0, axis=1,
+            model_layers[level]['b_norm'+str(i+1)] = BatchNormalization(mode=0, axis=3,
                                          gamma_regularizer=l2(0.0001),
                                          beta_regularizer=l2(0.0001))(previous_layer)
             model_layers[level]['act'+str(i+1)] = Activation('relu')(model_layers[level]['b_norm'+str(i+1)])
@@ -54,7 +54,7 @@ class Tiramisu():
 
     def TransitionDown(self, filters, previous_layer, model_layers, level):
         model_layers[level] = {}
-        model_layers[level]['b_norm'] = BatchNormalization(mode=0, axis=1,
+        model_layers[level]['b_norm'] = BatchNormalization(mode=0, axis=3,
                                      gamma_regularizer=l2(0.0001),
                                      beta_regularizer=l2(0.0001))(previous_layer)
         model_layers[level]['act'] = Activation('relu')(model_layers[level]['b_norm'])
@@ -107,30 +107,30 @@ class Tiramisu():
 
 
         layer_1_up  = self.TransitionUp(468, (468, 7, 7), (None, 468, 14, 14), layer_bottleneck, enc_model_layers, 'layer_1_up')  # m = 348 + 5x12 + 5x12 = 468.
-        skip_up_down_1 = concatenate([layer_1_up, enc_model_layers['layer_5_down']['conv'+ str(5)]], axis=3)
+        skip_up_down_1 = concatenate([layer_1_up, enc_model_layers['layer_5_down']['conv'+ str(5)]], axis=-1)
         layer_1a_up  = self.DenseBlock(5,468, skip_up_down_1, enc_model_layers, 'layer_1a_up' )
 
         layer_2_up  = self.TransitionUp(408, (408, 14, 14), (None, 408, 28, 28), layer_1a_up, enc_model_layers, 'layer_2_up') # m = 288 + 5x12 + 5x12 = 408
-        skip_up_down_2 = concatenate([layer_2_up, enc_model_layers['layer_4_down']['conv'+ str(5)]], axis=3)
+        skip_up_down_2 = concatenate([layer_2_up, enc_model_layers['layer_4_down']['conv'+ str(5)]], axis=-1)
         layer_2a_up  = self.DenseBlock(5,408, skip_up_down_2, enc_model_layers, 'layer_2a_up' )
 
         layer_3_up  = self.TransitionUp(348, (348, 28, 28), (None, 348, 56, 56), layer_2a_up, enc_model_layers, 'layer_3_up') # m = 228 + 5x12 + 5x12 = 348
-        skip_up_down_3 = concatenate([layer_3_up, enc_model_layers['layer_3_down']['conv'+ str(5)]], axis=3)
+        skip_up_down_3 = concatenate([layer_3_up, enc_model_layers['layer_3_down']['conv'+ str(5)]], axis=-1)
         layer_3a_up  = self.DenseBlock(5,348, skip_up_down_3, enc_model_layers, 'layer_3a_up' )
 
         layer_4_up  = self.TransitionUp(288, (288, 56, 56), (None, 288, 112, 112), layer_3a_up, enc_model_layers, 'layer_4_up') # m = 168 + 5x12 + 5x12 = 288
-        skip_up_down_4 = concatenate([layer_4_up, enc_model_layers['layer_2_down']['conv'+ str(5)]], axis=3)
+        skip_up_down_4 = concatenate([layer_4_up, enc_model_layers['layer_2_down']['conv'+ str(5)]], axis=-1)
         layer_4a_up  = self.DenseBlock(5,288, skip_up_down_4, enc_model_layers, 'layer_4a_up' )
 
         layer_5_up  = self.TransitionUp(228, (228, 112, 112), (None, 228, 224, 224), layer_4a_up, enc_model_layers, 'layer_5_up') # m = 108 + 5x12 + 5x12 = 228
-        skip_up_down_5 = concatenate([layer_5_up, enc_model_layers['layer_1_down']['conv'+ str(5)]], axis=3)
+        skip_up_down_5 = concatenate([layer_5_up, enc_model_layers['layer_1_down']['conv'+ str(5)]], axis=-1)
         layer_5a_up  = self.DenseBlock(5,228, skip_up_down_5, enc_model_layers, 'concatenate' )
 
         # last 
-        last_conv = Conv2D(12, kernel_size=(1,1), 
-                                 padding='same',
-                                 kernel_initializer="he_uniform",
-                                 kernel_regularizer = l2(0.0001),
+        last_conv = Conv2D(12, activation='linear',
+                                kernel_size=(1,1), 
+                                padding='same',
+                                kernel_regularizer = l2(0.0001),
                                 data_format='channels_last')(layer_5a_up)
             
         reshape = Reshape((12, 224 * 224))(last_conv)

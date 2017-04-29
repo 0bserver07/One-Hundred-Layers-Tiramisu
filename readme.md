@@ -2,6 +2,8 @@
 ---
 
 *Work In Progress, Results can't be replicated yet with the models here*
+* UPDATE: April 28th: Skip_Connection added thanks to the reviewers, check model `model-tiramasu-67-func-api.py`
+
 
 ` feel free to open issues for suggestions:)`
 
@@ -61,7 +63,7 @@ What is The One Hundred Layers Tiramisu?
 
 * Download the CamVid Dataset as explained below:
 	* Use the `data_loader.py` to crop images to `224, 224` as in the paper implementation.
-* run `python model-tirmasu-103.py` or `python model-tirmasu-56.py` for now to generate each models file.
+* run `model-tiramasu-67-func-api.py` or `python model-tirmasu-56.py` for now to generate each models file.
 * run `python train-tirmasu.py` to start training:
 	* Saves best checkpoints for the model and `data_loader` included for the `CamVidDataset`
 * `helper.py` contains two methods `normalized` and `one_hot_it`, currently for the CamVid Task
@@ -87,7 +89,7 @@ What is The One Hundred Layers Tiramisu?
 	  
 | Models        | Acc           | Loss  | Notes |
 | ------------- |:-------------:| -----:|-------|
-| FC-DenseNet 67| ![model-results](./imgs/tiramisu-67-model-acc.png) | ![model-results](./imgs/tiramisu-67-model-loss.png) | 150 Epochs, SGD
+| FC-DenseNet 67| ![model-results](./imgs/tiramisu-67-model-acc.png) | ![model-results](./imgs/tiramisu-67-model-loss.png) | 150 Epochs, RMSPROP
 
 ### To Do:
 ----
