@@ -1,7 +1,7 @@
 appdirs==1.4.3
 atari-py==0.0.18
 autobahn==0.17.1
-bleach==1.5.0
+bleach==3.1.4
 box2d-py==2.3.1
 click==6.7
 constantly==15.1.0
