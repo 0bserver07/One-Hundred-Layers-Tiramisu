@@ -11,7 +11,7 @@ docker-py==1.10.3
 docker-pycreds==0.2.1
 entrypoints==0.2.2
 fastzbarlight==0.0.14
-Flask==0.12.1
+Flask==1.0
 gevent==1.2.1
 go-vncdriver==0.4.19
 greenlet==0.4.12
