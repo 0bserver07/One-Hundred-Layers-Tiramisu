@@ -56,7 +56,7 @@ PyOpenGL==3.1.0
 pyparsing==2.2.0
 python-dateutil==2.6.0
 pytz==2016.10
-PyYAML==5.1
+PyYAML==5.4
 pyzmq==16.0.2
 ReinforcePy==0.3
 requests==2.20.0
