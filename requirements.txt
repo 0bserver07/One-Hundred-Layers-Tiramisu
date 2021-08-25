@@ -63,7 +63,7 @@ requests==2.20.0
 scipy==0.19.0
 simplegeneric==0.8.1
 six==1.9.0
-tensorflow==1.15.2
+tensorflow==2.5.1
 tensorflow-gpu==1.15.2
 terminado==0.6
 testpath==0.3
