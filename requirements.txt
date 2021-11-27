@@ -51,7 +51,7 @@ prompt-toolkit==1.0.13
 protobuf==3.2.0
 ptyprocess==0.5.1
 pyglet==1.2.4
-Pygments==2.2.0
+Pygments==2.7.4
 PyOpenGL==3.1.0
 pyparsing==2.2.0
 python-dateutil==2.6.0
