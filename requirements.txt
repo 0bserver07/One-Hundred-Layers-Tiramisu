@@ -21,7 +21,7 @@ html5lib==0.9999999
 imageio==2.1.1
 incremental==16.10.1
 ipykernel==4.5.2
-ipython==5.2.2
+ipython==7.16.3
 ipython-genutils==0.1.0
 itsdangerous==0.24
 Jinja2==2.11.3
