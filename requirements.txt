@@ -74,7 +74,7 @@ tqdm==4.11.2
 traitlets==4.3.1
 Twisted==20.3.0
 txaio==2.6.0
-ujson==1.35
+ujson==5.2.0
 wcwidth==0.1.7
 websocket-client==0.40.0
 Werkzeug==0.15.3
