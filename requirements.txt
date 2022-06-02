@@ -17,7 +17,7 @@ go-vncdriver==0.4.19
 greenlet==0.4.12
 gym==0.7.3
 h5py==2.6.0
-html5lib==0.9999999
+html5lib==0.99999999
 imageio==2.1.1
 incremental==16.10.1
 ipykernel==4.5.2
