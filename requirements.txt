@@ -36,7 +36,7 @@ mujoco-py==0.5.7
 nbconvert==5.1.1
 nbformat==4.2.0
 notebook==6.4.1
-numpy==1.12.1
+numpy==1.22.0
 olefile==0.44
 opencv-python==4.2.0.32
 pachi-py==0.0.21
