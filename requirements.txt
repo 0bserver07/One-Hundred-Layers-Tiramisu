@@ -31,7 +31,7 @@ jupyter-core==4.2.1
 Keras==2.0.2
 MarkupSafe==0.23
 matplotlib==2.0.0
-mistune==0.8.1
+mistune==2.0.3
 mujoco-py==0.5.7
 nbconvert==5.1.1
 nbformat==4.2.0
