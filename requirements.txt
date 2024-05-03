@@ -70,7 +70,7 @@ testpath==0.3
 tflearn==0.3
 Theano==0.9.0
 tornado==4.4.2
-tqdm==4.11.2
+tqdm==4.66.3
 traitlets==4.3.1
 Twisted==20.3.0
 txaio==2.6.0
