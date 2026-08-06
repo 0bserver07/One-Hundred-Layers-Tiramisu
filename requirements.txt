@@ -1,81 +1,25 @@
-appdirs==1.4.3
-atari-py==0.0.18
-autobahn==20.12.3
-bleach==3.3.0
-box2d-py==2.3.1
-click==6.7
-constantly==15.1.0
-cycler==0.10.0
-decorator==4.0.11
-docker-py==1.10.3
-docker-pycreds==0.2.1
-entrypoints==0.2.2
-fastzbarlight==0.0.14
-Flask==1.0
-gevent==1.2.1
-go-vncdriver==0.4.19
-greenlet==0.4.12
-gym==0.7.3
-h5py==2.6.0
-html5lib==0.9999999
-imageio==2.1.1
-incremental==16.10.1
-ipykernel==4.5.2
-ipython==5.2.2
-ipython-genutils==0.1.0
-itsdangerous==0.24
-Jinja2==2.11.3
-jsonschema==2.6.0
-jupyter-client==4.4.0
-jupyter-core==4.2.1
-Keras==2.0.2
-MarkupSafe==0.23
-matplotlib==2.0.0
-mistune==0.8.1
-mujoco-py==0.5.7
-nbconvert==5.1.1
-nbformat==4.2.0
-notebook==6.4.1
-numpy==1.12.1
-olefile==0.44
-opencv-python==4.2.0.32
-pachi-py==0.0.21
-packaging==16.8
-pandocfilters==1.4.1
-pexpect==4.2.1
-pickleshare==0.7.4
-Pillow==8.3.2
-pip-save==0.2.0
-pkg-resources==0.0.0
-prompt-toolkit==1.0.13
-protobuf==3.2.0
-ptyprocess==0.5.1
-pyglet==1.2.4
-Pygments==2.7.4
-PyOpenGL==3.1.0
-pyparsing==2.2.0
-python-dateutil==2.6.0
-pytz==2016.10
-PyYAML==5.4
-pyzmq==16.0.2
-ReinforcePy==0.3
-requests==2.20.0
-scipy==0.19.0
-simplegeneric==0.8.1
-six==1.9.0
-tensorflow==2.5.2
-tensorflow-gpu==2.5.2
-terminado==0.6
-testpath==0.3
-tflearn==0.3
-Theano==0.9.0
-tornado==4.4.2
-tqdm==4.11.2
-traitlets==4.3.1
-Twisted==20.3.0
-txaio==2.6.0
-ujson==1.35
-wcwidth==0.1.7
-websocket-client==0.40.0
-Werkzeug==0.15.3
-zope.interface==4.3.3
+# Dependencies actually imported by this repository.
+#
+# The previous version of this file was a machine-wide `pip freeze` from 2017
+# (it contained an OpenAI Gym/Universe RL stack, Flask, Twisted, docker-py and
+# the `pkg-resources==0.0.0` Ubuntu artifact) — none of which this code imports.
+# It listed both `tensorflow` and `tensorflow-gpu` at a pinned version, which by
+# itself accounted for 366 of 481 Dependabot alerts on packages the project
+# never used.
+#
+# This is archived 2017 research code. It targets the Keras 2.0.x functional
+# API and will NOT run on modern Keras/TF — it uses APIs removed since then
+# (`keras.layers.normalization.BatchNormalization`, `keras.layers.merge`,
+# `Deconvolution2D`, `K.set_image_dim_ordering`). Versions are left unpinned
+# because no modern resolution of them runs this code; to reproduce the
+# original results, recreate the 2017 environment recorded below.
+#
+# Original pinned versions (2017): Keras==2.0.2, tensorflow==1.x,
+# numpy==1.12.1, opencv-python==3.x, matplotlib==2.0.0, h5py==2.6.0
+
+Keras
+tensorflow
+numpy
+opencv-python
+matplotlib
+h5py
